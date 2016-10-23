@@ -1,4 +1,6 @@
-﻿using System;
+﻿using QueuServer.Managers;
+using QueuServer.Models.Terminal;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,21 +13,20 @@ using System.Threading.Tasks;
 
 namespace QueuServer
 {
-    class ServerManager
+    class NetworkManager
     {
-        List<SocketConnection> connections;
-
         IPAddress ipAddress;
         TcpListener tcpListener;
 
         Thread newClientsThread;
+        List<SocketConnection> connections;
 
-        public ServerManager()
+        public NetworkManager()
         {
             connections = new List<SocketConnection>();
         }
 
-        ~ServerManager()
+        ~NetworkManager()
         {
             tcpListener.Stop();
             newClientsThread.Abort();
@@ -37,8 +38,8 @@ namespace QueuServer
 
         public void Initialize()
         {
-            ipAddress = IPAddress.Parse(Constants.IP_ADDRESS);
-            tcpListener = new TcpListener(ipAddress, Constants.IP_PORT);
+            ipAddress = IPAddress.Parse(_Constants.IP_ADDRESS);
+            tcpListener = new TcpListener(ipAddress, _Constants.IP_PORT);
             tcpListener.Start();
 
             newClientsThread = new Thread(() => ListenToNewClients(tcpListener));
@@ -53,11 +54,38 @@ namespace QueuServer
             while (true)
             {
                 Socket newSocket = tcpListener.AcceptSocket();
-                Thread newThread = new Thread(() => ListToClients(newSocket));
-                newThread.Start();
+                new Thread(() => IdentifyConnection(newSocket)).Start();
 
-                connections.Add(new SocketConnection(newSocket, newThread));
             }
+        }
+
+        private void IdentifyConnection(Socket socket)
+        {
+            var buffer = new byte[100];
+            int size = socket.Receive(buffer);
+            if (size > 0)
+            {
+                var id = IdentifyConnection(buffer, size);
+                if (id != null)
+                {
+                    Thread newThread = new Thread(() => ListToClients(socket));
+                    connections.Add(new SocketConnection(socket, newThread, id.IsTerminal, id.TerminalId));
+                    newThread.Start();
+                }
+                else
+                    throw new Exception();
+
+            }
+            else
+                throw new Exception();
+        }
+
+        private ConnectionIdentification IdentifyConnection(byte[] buffer, int size)
+        {
+            var data = new byte[size];
+            Array.Copy(buffer, data, size);
+
+            return SerializationManager<ConnectionIdentification>.Desserialize(data);
         }
 
         private void ListToClients(Socket socket)
@@ -91,24 +119,36 @@ namespace QueuServer
             switch (comm.who)
             {
                 case SocketRequestCommunication.Who.ANDROID:
-                    ComputeSocketCommunication_Android(comm);
+                    ComputeSocketCommunication_Android(socket, comm);
                     break;
 
                 case SocketRequestCommunication.Who.CLIENT:
-                    ComputeSocketCommunication_Client(comm);
+                    ComputeSocketCommunication_Client(socket, comm);
                     break;
             }
-
         }
 
-        private void ComputeSocketCommunication_Android(SocketRequestCommunication comm)
+        private void ComputeSocketCommunication_Android(Socket originSocket, SocketRequestCommunication comm)
         {
 
+            foreach (var con in connections)
+            {
+                if (!con.isTerminal || con.socket.Equals(originSocket))
+                    continue;
+
+                SendDataToClient(con.socket, new byte[] { 1, 2, 5 });
+            }
         }
 
-        private void ComputeSocketCommunication_Client(SocketRequestCommunication comm)
+        private void ComputeSocketCommunication_Client(Socket socket, SocketRequestCommunication comm)
         {
+            foreach (var con in connections)
+            {
+                if (!con.isTerminal)
+                    continue;
 
+                SendDataToClient(con.socket, new byte[] { 1, 2, 5 });
+            }
         }
 
         private SocketRequestCommunication DecodeSocketCommunication(byte[] buffer, int size)
@@ -116,7 +156,12 @@ namespace QueuServer
             var bArray = new byte[size];
             Array.Copy(buffer, bArray, size);
 
-            return SocketRequestCommunication.Deserialize(bArray);
+            return SerializationManager<SocketRequestCommunication>.Desserialize(bArray);
+        }
+
+        public void SendDataToClient(Socket socket, byte[] data)
+        {
+            socket.Send(data);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace QueuServer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ServerManager serverManager;
+        private NetworkManager serverManager;
 
         public MainWindow()
         {
@@ -31,7 +31,7 @@ namespace QueuServer
 
         private void InitialLoad()
         {
-            serverManager = new ServerManager();
+            serverManager = new NetworkManager();
             serverManager.Initialize();
 
             //var comm = new SocketCommunication()

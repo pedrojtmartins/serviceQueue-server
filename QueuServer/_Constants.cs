@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace QueuServer
 {
-    class Constants
+    class _Constants
     {
-        public static  String IP_ADDRESS = "192.168.1.79";
+        public static  String IP_ADDRESS = "192.168.1.146";
     public static  int IP_PORT = 6600;
     }
 }

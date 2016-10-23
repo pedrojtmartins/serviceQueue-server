@@ -13,10 +13,15 @@ namespace QueuServer
         public Socket socket { get; set; }
         public Thread thread { get; set; }
 
-        public SocketConnection(Socket socket, Thread thread)
+        public bool isTerminal { get; set; }
+        public int terminalId { get; set; }
+
+        public SocketConnection(Socket socket, Thread thread, bool isTerminal, int terminalId = -1)
         {
             this.socket = socket;
             this.thread = thread;
+            this.isTerminal = isTerminal;
+            this.terminalId = terminalId;
         }
 
         public void Terminate()

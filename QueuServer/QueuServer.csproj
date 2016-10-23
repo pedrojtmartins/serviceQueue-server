@@ -66,11 +66,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Constants.cs" />
-    <Compile Include="Managers\DatabaseManager.cs" />
-    <Compile Include="Managers\ServerManager.cs" />
-    <Compile Include="Models\SocketBroadcastCommunication.cs" />
-    <Compile Include="Models\SocketRequestCommunication.cs" />
+    <Compile Include="_Constants.cs" />
+    <Compile Include="Databases\DatabaseManager.cs" />
+    <Compile Include="Models\Terminal\ServerUpdate.cs" />
+    <Compile Include="Models\General\ConnectionIdentification.cs" />
+    <Compile Include="Serialization\SerializationManager.cs" />
+    <Compile Include="Network\NetworkManager.cs" />
+    <Compile Include="Models\General\SocketRequestCommunication.cs" />
+    <Compile Include="Models\Terminal\TerminalTicket.cs" />
     <Compile Include="queue_db.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -86,7 +89,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>queue_db.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Socket\SocketConnection.cs" />
+    <Compile Include="Models\General\SocketConnection.cs" />
     <Compile Include="ticket.cs">
       <DependentUpon>queue_db.tt</DependentUpon>
     </Compile>
@@ -152,6 +155,9 @@
       <DependentUpon>queue_db.edmx</DependentUpon>
       <LastGenOutput>queue_db.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Ticket\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
