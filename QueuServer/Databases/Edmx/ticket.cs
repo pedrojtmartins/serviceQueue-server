@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace QueuServer
+namespace QueuServer.Databases.Edmx
 {
     using System;
     using System.Collections.Generic;
