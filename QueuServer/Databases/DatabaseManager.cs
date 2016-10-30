@@ -10,6 +10,7 @@ namespace QueuServer.Managers
     {
         private queue_dbEntities1 dbContext;
         private static DatabaseManager databaseManager;
+
         public static DatabaseManager getInstance()
         {
             if (databaseManager == null)
@@ -23,14 +24,15 @@ namespace QueuServer.Managers
             dbContext = new queue_dbEntities1();
         }
 
-        public ticket AddNewTicket(int iNumber, int iType)
+        public int AddNewTicket(int iType)
         {
-            return dbContext.tickets.Add(new ticket()
+            dbContext.tickets.Add(new ticket()
             {
-                number = iNumber,
+                number = GetNextNumberForType(iType),
                 type = iType,
-                date_start = DateTime.UtcNow
+                date_start = DateTime.Now
             });
+            return dbContext.SaveChanges();
         }
 
         public int SetTicketAsComplete(int iId, int clientId)
@@ -39,7 +41,7 @@ namespace QueuServer.Managers
             if (ticket == null)
                 throw new Exception();
 
-            ticket.date_end = DateTime.UtcNow;
+            ticket.date_end = DateTime.Now;
             ticket.clientId = clientId;
 
             return dbContext.SaveChanges();
@@ -55,6 +57,13 @@ namespace QueuServer.Managers
             return (from p in dbContext.tickets where p.id == id select p).First();
         }
 
+        private int GetNextNumberForType(int type)
+        {
+            var t = (from p in dbContext.tickets where p.type == type && p.date_start >= DateTime.Today orderby p.id descending select p).FirstOrDefault();
+            if (t == null)
+                return 1;
 
+            return t.number + 1;
+        }
     }
 }

@@ -130,7 +130,6 @@ namespace QueuServer
 
         private void ComputeSocketCommunication_Android(Socket originSocket, SocketRequestCommunication comm)
         {
-
             foreach (var con in connections)
             {
                 if (!con.isTerminal || con.socket.Equals(originSocket))
@@ -149,6 +148,10 @@ namespace QueuServer
 
                 SendDataToClient(con.socket, new byte[] { 1, 2, 5 });
             }
+        }
+
+        private void UpdateServerWindow()
+        {
         }
 
         private SocketRequestCommunication DecodeSocketCommunication(byte[] buffer, int size)

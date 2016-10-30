@@ -4,11 +4,107 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QueuServer"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        mc:Ignorable="d" WindowStyle="None" ResizeMode="NoResize"  
+    WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Title="MainWindow" Height="1024" Width="1280">
 
-    <Grid>
-        
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="TableTitle">
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ServiceTitle">
+            <Setter Property="FontSize" Value="60" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="25,0,0,0" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ServiceValues">
+            <Setter Property="FontSize" Value="60" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="75">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Balcão" Grid.Column="2" Style="{StaticResource TableTitle}"/>
+        <TextBlock Text="Senha" Grid.Column="4" Style="{StaticResource TableTitle}"/>
+
+        <!--Row1-->
+        <Canvas Grid.Column="0"   
+                Grid.Row="2" 
+                Background="Aquamarine"/>
+        <Canvas Grid.Column="2"  
+                Grid.Row="2" 
+                Background="Aquamarine"/>
+        <Canvas Grid.Column="4"  
+                Grid.Row="2" 
+                Background="Aquamarine"/>
+
+        <TextBlock Grid.Column="0"   x:Name="Row1_Title"
+                       Grid.Row="2" 
+                       Style="{StaticResource ServiceTitle}"
+                       Text="Atendimento geral"/>
+        <TextBlock Grid.Column="2"   x:Name="Row1_Terminal"
+                       Grid.Row="2" 
+                       Style="{StaticResource ServiceValues}"                      
+                       Text="1"/>
+        <TextBlock Grid.Column="4"   x:Name="Row1_Ticket"
+                       Grid.Row="2" 
+                       Style="{StaticResource ServiceValues}"                      
+                       Text="A2"/>
+
+        <!--Row2-->
+        <Canvas Grid.Column="0"  
+                Grid.Row="4" 
+                Background="Aquamarine"/>
+        <Canvas Grid.Column="2"  
+                Grid.Row="4" 
+                Background="Aquamarine"/>
+        <Canvas Grid.Column="4"  
+                Grid.Row="4" 
+                Background="Aquamarine"/>
+
+        <TextBlock Grid.Column="0"   x:Name="Row2_Title"
+                       Grid.Row="4" 
+                       Style="{StaticResource ServiceTitle}"
+                       Text="Consultas"/>
+        <TextBlock Grid.Column="2"   x:Name="Row2_Terminal"
+                       Grid.Row="4" 
+                       Style="{StaticResource ServiceValues}"                      
+                       Text="3"/>
+        <TextBlock Grid.Column="4"   x:Name="Row2_Ticket"
+                       Grid.Row="4" 
+                       Style="{StaticResource ServiceValues}"                      
+                       Text="B6"/>
     </Grid>
+
 
 </Window>

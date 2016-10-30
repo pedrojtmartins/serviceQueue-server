@@ -34,6 +34,7 @@ namespace QueuServer
             serverManager = new NetworkManager();
             serverManager.Initialize();
 
+            
             //var comm = new SocketCommunication()
             //{
             //    who = SocketCommunication.Who.ANDROID,
