@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace QueuServer
@@ -26,6 +27,15 @@ namespace QueuServer
 
             if (thread != null)
                 thread.Abort();
+        }
+
+        public static int FindTerminal(List<SocketConnection> conns, Socket socket)
+        {
+            foreach(var conn in conns)
+                if (conn.socket.Equals(socket))
+                    return conn.terminalId;
+
+            return -1;
         }
     }
 }

@@ -132,6 +132,9 @@ namespace QueuServer
                 if (!con.isTerminal || con.socket.Equals(originSocket))
                     continue;
 
+                var dbManager = DatabaseManager.getInstance();
+                dbManager.AddNewTicket((int)comm.ticketType);
+
                 String toSend = "";
                 new Thread(() => SendDataToClients(toSend)).Start();
             }
@@ -144,8 +147,15 @@ namespace QueuServer
                 if (!con.isTerminal)
                     continue;
 
-                String toSend = "";
-                new Thread(() => SendDataToClients(toSend)).Start();
+                int terminalId = SocketConnection.FindTerminal(connections, socket);
+                if (terminalId != -1)
+                {
+                    var dbManager = DatabaseManager.getInstance();
+                    dbManager.SetTicketAsComplete(comm.ticketCompletedId, terminalId);
+                    //String toSend = "";
+                    //new Thread(() => SendDataToClients(toSend)).Start();
+                }
+                else throw new Exception();
             }
         }
 
@@ -167,5 +177,7 @@ namespace QueuServer
             foreach (var conn in connections)
                 conn.socket.Send(buffer);
         }
+
+
     }
 }
