@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace QueuServer
 {
@@ -130,7 +132,8 @@ namespace QueuServer
                 if (!con.isTerminal || con.socket.Equals(originSocket))
                     continue;
 
-                SendDataToClient(con.socket, new byte[] { 1, 2, 5 });
+                String toSend = "";
+                new Thread(() => SendDataToClients(toSend)).Start();
             }
         }
 
@@ -141,7 +144,8 @@ namespace QueuServer
                 if (!con.isTerminal)
                     continue;
 
-                SendDataToClient(con.socket, new byte[] { 1, 2, 5 });
+                String toSend = "";
+                new Thread(() => SendDataToClients(toSend)).Start();
             }
         }
 
@@ -157,9 +161,11 @@ namespace QueuServer
             return SerializationManager<SocketRequestCommunication>.Desserialize(bArray);
         }
 
-        public void SendDataToClient(Socket socket, byte[] data)
+        public void SendDataToClients(string data)
         {
-            socket.Send(data);
+            var buffer = Encoding.ASCII.GetBytes(data);
+            foreach (var conn in connections)
+                conn.socket.Send(buffer);
         }
     }
 }
