@@ -1,4 +1,7 @@
-﻿using QueuServer.Managers;
+﻿using QueueServer.Models;
+using QueuServer.Databases.Edmx;
+using QueuServer.Interfaces;
+using QueuServer.Managers;
 using QueuServer.Models.Terminal;
 using System;
 using System.Collections.Generic;
@@ -18,9 +21,12 @@ namespace QueuServer
         Thread newClientsThread;
         List<SocketConnection> connections;
 
-        public NetworkManager()
+        IWindowUpdate updateCllback;
+
+        public NetworkManager(IWindowUpdate updateCllback)
         {
             connections = new List<SocketConnection>();
+            this.updateCllback = updateCllback;
         }
 
         ~NetworkManager()
@@ -52,7 +58,6 @@ namespace QueuServer
             {
                 Socket newSocket = tcpListener.AcceptSocket();
                 new Thread(() => IdentifyConnection(newSocket)).Start();
-
             }
         }
 
@@ -135,8 +140,8 @@ namespace QueuServer
                 var dbManager = DatabaseManager.getInstance();
                 dbManager.AddNewTicket((int)comm.ticketType);
 
-                String toSend = "";
-                new Thread(() => SendDataToClients(toSend)).Start();
+                //String toSend = "";
+                //new Thread(() => SendDataToClients(toSend)).Start();
             }
         }
 
@@ -152,15 +157,21 @@ namespace QueuServer
                 {
                     var dbManager = DatabaseManager.getInstance();
                     dbManager.SetTicketAsComplete(comm.ticketCompletedId, terminalId);
-                    //String toSend = "";
-                    //new Thread(() => SendDataToClients(toSend)).Start();
+
+                    ticket t = dbManager.GetNextTicket();
+                    dbManager.SetTicketForClient(t.id, terminalId);
+
+                    ServerUpdate su = new ServerUpdate();
+                    su.nextTicket = new Models.TerminalTicket(t);
+                    //su.tickets = dbManager.GetPendingList(20);
+
+                    var serialized = SerializationManager<ServerUpdate>.Serialize(su);
+                    new Thread(() => SendDataToClients(serialized)).Start();
+
+                    updateCllback.TicketsUpdated(su);
                 }
                 else throw new Exception();
             }
-        }
-
-        private void UpdateServerWindow()
-        {
         }
 
         private SocketRequestCommunication DecodeSocketCommunication(byte[] buffer, int size)
@@ -177,7 +188,5 @@ namespace QueuServer
             foreach (var conn in connections)
                 conn.socket.Send(buffer);
         }
-
-
     }
 }

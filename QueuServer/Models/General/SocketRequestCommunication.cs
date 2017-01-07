@@ -21,6 +21,5 @@ namespace QueuServer
 
         [DataMember(Name = "i", IsRequired = false)]
         public int ticketCompletedId { get; set; }
-
     }
 }

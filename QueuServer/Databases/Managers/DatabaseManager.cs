@@ -51,6 +51,18 @@ namespace QueuServer.Managers
             return (from p in dbContext.tickets where p.date_end == null select p).Take(count).ToList();
         }
 
+        public ticket GetNextTicket()
+        {
+            return  (from p in dbContext.tickets where p.date_end == null orderby p.id ascending select p).Take(1).Single();
+        }
+
+        public int SetTicketForClient(int ticketId, int clientId)
+        {
+            ticket t = (from p in dbContext.tickets where p.id == ticketId select p).Take(1).Single();
+            t.clientId = clientId;
+            return dbContext.SaveChanges();
+        }
+
         private ticket GetPendingById(int id)
         {
             return (from p in dbContext.tickets where p.id == id select p).First();

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:QueuServer"
         mc:Ignorable="d"  ResizeMode="NoResize"  
     WindowStartupLocation="CenterScreen" 
-        Title="MainWindow" Height="500" Width="600">
+        Title="MainWindow" Height="768" Width="1366">
     <!--WindowState="Maximized" WindowStyle="None"-->
 
     <Window.Resources>
@@ -34,15 +34,16 @@
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="2" />
             <ColumnDefinition Width="2*" />
+
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
             <RowDefinition Height="5" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
             <RowDefinition Height="5" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
             <RowDefinition Height="5" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
         </Grid.RowDefinitions>
 
         <TextBlock Text="Balcão" Grid.Column="2" Style="{StaticResource TableTitle}"/>
@@ -55,18 +56,14 @@
         <Canvas Grid.Column="2"  
                 Grid.Row="2" 
                 Background="Aquamarine"/>
-        <Canvas Grid.Column="4"  
-                Grid.Row="2" 
-                Background="Aquamarine"/>
+
 
         <TextBlock Grid.Column="0"    x:Name="Row1_Ticket"
                        Grid.Row="2" 
-                       Style="{StaticResource ServiceValues}"                      
-                       Text="A2"/>
-        <TextBlock Grid.Column="3"  x:Name="Row1_Terminal"
+                       Style="{StaticResource ServiceValues}"/>
+        <TextBlock Grid.Column="2"  x:Name="Row1_Terminal"
                        Grid.Row="2" 
-                       Style="{StaticResource ServiceValues}"                      
-                       Text="2"/>
+                       Style="{StaticResource ServiceValues}"/>
 
         <!--Row2-->
         <Canvas Grid.Column="0"  
@@ -75,18 +72,35 @@
         <Canvas Grid.Column="2"  
                 Grid.Row="4" 
                 Background="Aquamarine"/>
-        <Canvas Grid.Column="4"  
+        <Canvas Grid.Column="2"  
                 Grid.Row="4" 
                 Background="Aquamarine"/>
 
         <TextBlock Grid.Column="0"   x:Name="Row2_Ticket"
                        Grid.Row="4" 
-                       Style="{StaticResource ServiceValues}"                      
-                       Text="B3"/>
-        <TextBlock Grid.Column="3"   x:Name="Row2_Terminal"
+                       Style="{StaticResource ServiceValues}"/>
+        <TextBlock Grid.Column="2"   x:Name="Row2_Terminal"
                        Grid.Row="4" 
+                       Style="{StaticResource ServiceValues}"/>
+
+        <!--Row3-->
+        <Canvas Grid.Column="0"  
+                Grid.Row="6" 
+                Background="Aquamarine"/>
+        <Canvas Grid.Column="2"  
+                Grid.Row="6" 
+                Background="Aquamarine"/>
+        <Canvas Grid.Column="2"  
+                Grid.Row="6" 
+                Background="Aquamarine"/>
+
+        <TextBlock Grid.Column="0"   x:Name="Row3_Ticket"
+                       Grid.Row="6" 
+                       Style="{StaticResource ServiceValues}"                      />
+        <TextBlock Grid.Column="2"   x:Name="Row3_Terminal"
+                       Grid.Row="6" 
                        Style="{StaticResource ServiceValues}"                      
-                       Text="1"/>
+                       />
     </Grid>
 
 
