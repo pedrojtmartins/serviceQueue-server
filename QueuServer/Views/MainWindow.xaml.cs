@@ -3,6 +3,8 @@ using System.Windows;
 using QueueServer.Models;
 using System;
 using QueuServer.Models;
+using System.IO;
+using System.Linq;
 
 namespace QueuServer
 {
@@ -12,12 +14,14 @@ namespace QueuServer
     public partial class MainWindow : Window, IWindowUpdate
     {
         private NetworkManager serverManager;
+        private string currentVideo;
 
         public MainWindow()
         {
             InitializeComponent();
 
             InitialLoad();
+            StartVideoPlayback();
         }
 
         public void TicketsUpdated(ServerUpdate su)
@@ -57,6 +61,50 @@ namespace QueuServer
             //};
 
             //Console.WriteLine(SocketCommunication.Serialize(comm));
+        }
+
+        public void StartVideoPlayback()
+        {
+            String[] allfiles = FindVideos();
+            if (allfiles == null || allfiles.Length == 0)
+                return;
+
+            currentVideo = allfiles[0];
+
+            mediaPlayer.Source = new Uri(currentVideo, UriKind.Absolute);
+            mediaPlayer.MediaEnded += (s, e) => NextVideo();
+            mediaPlayer.Play();
+        }
+
+        private void NextVideo()
+        {
+            String[] allfiles = FindVideos();
+            if (allfiles == null || allfiles.Length == 0)
+                return;
+
+            for (int i = 0; i < allfiles.Length; i++)
+            {
+                var file = allfiles[i];
+                if (currentVideo.Equals(file))
+                {
+                    if (i == allfiles.Length - 1)
+                        currentVideo = allfiles[0];
+                    else
+                        currentVideo = allfiles[i + 1];
+
+                    break;
+                }
+            }
+
+            mediaPlayer.Source = new Uri(currentVideo, UriKind.Absolute);
+            mediaPlayer.Play();
+        }
+
+        private string[] FindVideos()
+        {
+            return Directory.EnumerateFiles(_Constants.VIDEOS_FOLDER)
+                .Where(file => file.ToLower().EndsWith(".wmv") || file.ToLower().EndsWith(".mp4"))
+                .ToArray();
         }
     }
 }
