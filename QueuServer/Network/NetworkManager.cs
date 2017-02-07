@@ -79,6 +79,7 @@ namespace QueuServer
 
             }
             else
+                //Terminal disconnected
                 throw new Exception();
         }
 
@@ -101,6 +102,7 @@ namespace QueuServer
                 //}
 
                 var buffer = new byte[100];
+                socket.ReceiveTimeout = int.MaxValue;
                 int size = socket.Receive(buffer);
                 if (size > 0)
                     ComputeSocketCommunication(socket, buffer, size);
@@ -132,17 +134,10 @@ namespace QueuServer
 
         private void ComputeSocketCommunication_Android(Socket originSocket, SocketRequestCommunication comm)
         {
-            foreach (var con in connections)
-            {
-                if (!con.isTerminal || con.socket.Equals(originSocket))
-                    continue;
+            var dbManager = DatabaseManager.getInstance();
+            int res = dbManager.AddNewTicket((int)comm.ticketType);
 
-                var dbManager = DatabaseManager.getInstance();
-                dbManager.AddNewTicket((int)comm.ticketType);
-
-                //String toSend = "";
-                //new Thread(() => SendDataToClients(toSend)).Start();
-            }
+            //new Thread(() => SendDataToClients(toSend)).Start();
         }
 
         private void ComputeSocketCommunication_Client(Socket socket, SocketRequestCommunication comm)
@@ -156,28 +151,42 @@ namespace QueuServer
                 if (terminalId != -1)
                 {
                     var dbManager = DatabaseManager.getInstance();
-                    dbManager.SetTicketAsComplete(comm.ticketCompletedId, terminalId);
 
-                    ticket t = dbManager.GetNextTicket();
-                    dbManager.SetTicketForClient(t.id, terminalId);
+                    if (comm.ticketCompletedId != -1)
+                        dbManager.SetTicketAsComplete(comm.ticketCompletedId, terminalId);
 
                     ServerUpdate su = new ServerUpdate();
-                    su.nextTicket = new Models.TerminalTicket(t);
-                    //su.tickets = dbManager.GetPendingList(20);
+                    ticket t = dbManager.GetNextTicket();
+                    if (t != null)
+                    {
+                        if (dbManager.SetTicketForClient(t.id, terminalId) == -1)
+                        {
+
+                        }
+
+                        su.nextTicket = new Models.TerminalTicket(t);
+                        updateCllback.TicketsUpdated(su);
+                    }
+                    else
+                        su.nextTicket = null;
 
                     var serialized = SerializationManager<ServerUpdate>.Serialize(su);
                     new Thread(() => SendDataToClients(serialized)).Start();
-
-                    updateCllback.TicketsUpdated(su);
                 }
-                else throw new Exception();
+                else
+                {
+                    throw new Exception();
+                }
             }
         }
 
         private SocketRequestCommunication DecodeSocketCommunication(byte[] buffer, int size)
         {
+
             var bArray = new byte[size];
             Array.Copy(buffer, bArray, size);
+
+            String json = Encoding.ASCII.GetString(bArray);
 
             return SerializationManager<SocketRequestCommunication>.Desserialize(bArray);
         }
@@ -186,7 +195,8 @@ namespace QueuServer
         {
             var buffer = Encoding.ASCII.GetBytes(data);
             foreach (var conn in connections)
-                conn.socket.Send(buffer);
+                if (conn.isTerminal)
+                    conn.socket.Send(buffer);
         }
     }
 }

@@ -30,21 +30,25 @@ namespace QueuServer
                 return;
 
             TerminalTicket ticket = su.nextTicket;
-            if (ticket.type == 0)
+
+            this.Dispatcher.Invoke(() =>
             {
-                Row1_Ticket.Text = "A" + ticket.number;
-                Row1_Terminal.Text = "" + ticket.clientId;
-            }
-            else if (ticket.type == 1)
-            {
-                Row2_Ticket.Text = "B" + ticket.number;
-                Row2_Terminal.Text = "" + ticket.clientId;
-            }
-            else if (ticket.type == 3)
-            {
-                Row3_Ticket.Text = "C" + ticket.number;
-                Row3_Terminal.Text = "" + ticket.clientId;
-            }
+                if (ticket.type == 0)
+                {
+                    Row1_Ticket.Text = "A" + ticket.number;
+                    Row1_Terminal.Text = "" + ticket.clientId;
+                }
+                else if (ticket.type == 1)
+                {
+                    Row2_Ticket.Text = "B" + ticket.number;
+                    Row2_Terminal.Text = "" + ticket.clientId;
+                }
+                else if (ticket.type == 3)
+                {
+                    Row3_Ticket.Text = "C" + ticket.number;
+                    Row3_Terminal.Text = "" + ticket.clientId;
+                }
+            });
         }
 
         private void InitialLoad()

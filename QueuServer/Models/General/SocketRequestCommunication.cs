@@ -17,7 +17,9 @@ namespace QueuServer
         public What what { get; set; }
 
         [DataMember(Name = "t", IsRequired = false)]
-        public TicketType ticketType { get; set; }
+        public int iTicketType { get; set; }
+
+        public TicketType ticketType { get { return iTicketType == 0 ? TicketType.NORMAL : TicketType.PRIORITY; } }
 
         [DataMember(Name = "i", IsRequired = false)]
         public int ticketCompletedId { get; set; }

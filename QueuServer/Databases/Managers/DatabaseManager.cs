@@ -36,6 +36,8 @@ namespace QueuServer.Managers
 
         public int SetTicketAsComplete(int iId, int clientId)
         {
+            if (iId == -1) return 0;
+
             var ticket = GetPendingById(iId);
             if (ticket == null)
                 throw new Exception();
@@ -53,12 +55,15 @@ namespace QueuServer.Managers
 
         public ticket GetNextTicket()
         {
-            return  (from p in dbContext.tickets where p.date_end == null orderby p.id ascending select p).Take(1).Single();
+            return (from p in dbContext.tickets where p.date_end == null orderby p.type descending, p.id ascending select p).Take(1).SingleOrDefault();
         }
 
         public int SetTicketForClient(int ticketId, int clientId)
         {
-            ticket t = (from p in dbContext.tickets where p.id == ticketId select p).Take(1).Single();
+            ticket t = (from p in dbContext.tickets where p.id == ticketId select p).SingleOrDefault();
+            if (t == null)
+                return -1;
+
             t.clientId = clientId;
             return dbContext.SaveChanges();
         }
