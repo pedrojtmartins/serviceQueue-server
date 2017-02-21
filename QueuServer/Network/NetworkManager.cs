@@ -103,13 +103,22 @@ namespace QueuServer
 
                 var buffer = new byte[100];
                 socket.ReceiveTimeout = int.MaxValue;
-                int size = socket.Receive(buffer);
-                if (size > 0)
-                    ComputeSocketCommunication(socket, buffer, size);
-                else
+
+                try
                 {
-                    //TODO remove socket
-                    throw new Exception();
+                    int size = socket.Receive(buffer);
+                    if (size > 0)
+                        ComputeSocketCommunication(socket, buffer, size);
+                    else
+                    {
+                        SocketConnection.RemoveConnection(connections, socket);
+                        return;
+                    }
+                }
+                catch (Exception e)
+                {
+                    SocketConnection.RemoveConnection(connections, socket);
+                    return;
                 }
             }
         }

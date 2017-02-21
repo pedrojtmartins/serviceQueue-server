@@ -31,11 +31,27 @@ namespace QueuServer
 
         public static int FindTerminal(List<SocketConnection> conns, Socket socket)
         {
-            foreach(var conn in conns)
+            if (conns == null)
+                return -1;
+
+            foreach (var conn in conns)
                 if (conn.socket.Equals(socket))
                     return conn.terminalId;
 
             return -1;
+        }
+
+        public static void RemoveConnection(List<SocketConnection> conns, Socket socket)
+        {
+            if (conns == null)
+                return;
+
+            foreach (var conn in conns)
+                if (conn.socket.Equals(socket))
+                {
+                    conns.Remove(conn);
+                    return;
+                }
         }
     }
 }
