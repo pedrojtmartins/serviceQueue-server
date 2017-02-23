@@ -43,11 +43,11 @@ namespace QueuServer
                     Row2_Ticket.Text = "B" + ticket.number;
                     Row2_Terminal.Text = "" + ticket.clientId;
                 }
-                else if (ticket.type == 3)
-                {
-                    Row3_Ticket.Text = "C" + ticket.number;
-                    Row3_Terminal.Text = "" + ticket.clientId;
-                }
+                //else if (ticket.type == 3)
+                //{
+                //    Row3_Ticket.Text = "C" + ticket.number;
+                //    Row3_Terminal.Text = "" + ticket.clientId;
+                //}
             });
         }
 

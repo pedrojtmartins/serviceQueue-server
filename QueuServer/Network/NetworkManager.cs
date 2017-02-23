@@ -75,7 +75,7 @@ namespace QueuServer
                     newThread.Start();
                 }
                 else
-                    throw new Exception();
+                { }
 
             }
             else
@@ -146,7 +146,11 @@ namespace QueuServer
             var dbManager = DatabaseManager.getInstance();
             int res = dbManager.AddNewTicket((int)comm.ticketType);
 
-            //new Thread(() => SendDataToClients(toSend)).Start();
+            //Print ticket
+
+
+            //Send confirmation to android
+            new Thread(() => SendData(originSocket, "1")).Start();
         }
 
         private void ComputeSocketCommunication_Client(Socket socket, SocketRequestCommunication comm)
@@ -206,6 +210,12 @@ namespace QueuServer
             foreach (var conn in connections)
                 if (conn.isTerminal)
                     conn.socket.Send(buffer);
+        }
+
+        public void SendData(Socket socket, String data)
+        {
+            var buffer = Encoding.ASCII.GetBytes(data);
+            socket.Send(buffer);
         }
     }
 }
