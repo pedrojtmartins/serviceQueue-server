@@ -50,12 +50,12 @@ namespace QueuServer.Managers
 
         public List<ticket> GetPendingList(int count)
         {
-            return (from p in dbContext.tickets where p.date_end == null select p).Take(count).ToList();
+            return (from p in dbContext.tickets where p.clientId == null select p).Take(count).ToList();
         }
 
         public ticket GetNextTicket()
         {
-            return (from p in dbContext.tickets where p.date_end == null orderby p.type descending, p.id ascending select p).Take(1).SingleOrDefault();
+            return (from p in dbContext.tickets where p.clientId == null orderby p.type descending, p.id ascending select p).Take(1).SingleOrDefault();
         }
 
         public int SetTicketForClient(int ticketId, int clientId)
