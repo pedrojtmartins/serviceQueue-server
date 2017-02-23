@@ -61,10 +61,10 @@
         <!--Row1-->
         <Canvas Grid.Column="0"   
                 Grid.Row="2" 
-                Background="Aquamarine"/>
+                Background="LightGray"/>
         <Canvas Grid.Column="2"  
                 Grid.Row="2" 
-                Background="Aquamarine"/>
+                Background="LightGray"/>
 
 
         <TextBlock Grid.Column="0"    x:Name="Row1_Ticket"
@@ -77,39 +77,18 @@
         <!--Row2-->
         <Canvas Grid.Column="0"  
                 Grid.Row="4" 
-                Background="Aquamarine"/>
-        <Canvas Grid.Column="2"  
+                Background="LightGray"/>
+            <Canvas Grid.Column="2"  
                 Grid.Row="4" 
-                Background="Aquamarine"/>
-        <Canvas Grid.Column="2"  
-                Grid.Row="4" 
-                Background="Aquamarine"/>
+                Background="LightGray"/>
 
-        <TextBlock Grid.Column="0"   x:Name="Row2_Ticket"
+            <TextBlock Grid.Column="0"   x:Name="Row2_Ticket"
                        Grid.Row="4" 
                        Style="{StaticResource ServiceValues}"/>
         <TextBlock Grid.Column="2"   x:Name="Row2_Terminal"
                        Grid.Row="4" 
                        Style="{StaticResource ServiceValues}"/>
 
-        <!--Row3-->
-        <Canvas Grid.Column="0"  
-                Grid.Row="6" 
-                Background="Aquamarine"/>
-        <Canvas Grid.Column="2"  
-                Grid.Row="6" 
-                Background="Aquamarine"/>
-        <Canvas Grid.Column="2"  
-                Grid.Row="6" 
-                Background="Aquamarine"/>
-
-        <TextBlock Grid.Column="0"   x:Name="Row3_Ticket"
-                       Grid.Row="6" 
-                       Style="{StaticResource ServiceValues}"                      />
-        <TextBlock Grid.Column="2"   x:Name="Row3_Terminal"
-                       Grid.Row="6" 
-                       Style="{StaticResource ServiceValues}"                      
-                       />
     </Grid>
     </Grid>
 
