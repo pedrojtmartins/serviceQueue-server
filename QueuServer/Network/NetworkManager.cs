@@ -2,6 +2,7 @@
 using QueuServer.Databases.Edmx;
 using QueuServer.Interfaces;
 using QueuServer.Managers;
+using QueuServer.Media;
 using QueuServer.Models.Terminal;
 using System;
 using System.Collections.Generic;
@@ -179,6 +180,8 @@ namespace QueuServer
 
                         su.nextTicket = new Models.TerminalTicket(t);
                         updateCllback.TicketsUpdated(su);
+
+                        MediaPlayer.playNextTicket();
                     }
                     else
                         su.nextTicket = null;

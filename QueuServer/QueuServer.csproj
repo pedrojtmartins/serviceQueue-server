@@ -69,6 +69,7 @@
     <Compile Include="Data\_Constants.cs" />
     <Compile Include="Databases\Managers\DatabaseManager.cs" />
     <Compile Include="Interfaces\IWindowUpdate.cs" />
+    <Compile Include="Media\MediaPlayer.cs" />
     <Compile Include="Models\Terminal\ServerUpdate.cs" />
     <Compile Include="Models\General\ConnectionIdentification.cs" />
     <Compile Include="Serialization\SerializationManager.cs" />
