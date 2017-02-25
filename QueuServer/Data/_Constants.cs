@@ -9,5 +9,7 @@ namespace QueuServer
 
         public static string VIDEOS_FOLDER = @"C:\Tickets\Videos";
         public static string SOUNDS_FOLDER = @"C:\Tickets\Sounds";
+
+        public static int TIME_WAIT_PRINTER = 750;
     }
 }

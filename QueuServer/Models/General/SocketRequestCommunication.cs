@@ -23,5 +23,33 @@ namespace QueuServer
 
         [DataMember(Name = "i", IsRequired = false)]
         public int ticketCompletedId { get; set; }
+
+        public static string getTicketTypeString(TicketType ticketType)
+        {
+            switch (ticketType)
+            {
+                case TicketType.NORMAL:
+                    return "Atendimento Geral";
+
+                case TicketType.PRIORITY:
+                    return "Atendimento Prioritário";
+            }
+
+            return "";
+        }
+
+        public static string getTicketNumber(TicketType ticketType, int ticketNumber)
+        {
+            switch (ticketType)
+            {
+                case TicketType.NORMAL:
+                    return "A" + ticketNumber;
+
+                case TicketType.PRIORITY:
+                    return "B" + ticketNumber;
+            }
+
+            return "";
+        }
     }
 }

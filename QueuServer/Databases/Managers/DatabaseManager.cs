@@ -23,15 +23,22 @@ namespace QueuServer.Managers
             dbContext = new queue_dbEntities1();
         }
 
-        public int AddNewTicket(int iType)
+        public ticket AddNewTicket(int iType)
         {
-            dbContext.tickets.Add(new ticket()
+            var newTicket = new ticket()
             {
                 number = GetNextNumberForType(iType),
                 type = iType,
                 date_start = DateTime.Now
-            });
-            return dbContext.SaveChanges();
+            };
+
+            dbContext.tickets.Add(newTicket);
+            var res = dbContext.SaveChanges();
+
+            if (res == 1)
+                return newTicket;
+
+            return null;
         }
 
         public int SetTicketAsComplete(int iId, int clientId)

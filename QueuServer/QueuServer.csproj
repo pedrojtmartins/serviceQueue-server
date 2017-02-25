@@ -46,8 +46,10 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -72,6 +74,7 @@
     <Compile Include="Media\MediaPlayer.cs" />
     <Compile Include="Models\Terminal\ServerUpdate.cs" />
     <Compile Include="Models\General\ConnectionIdentification.cs" />
+    <Compile Include="Printer\PrinterManager.cs" />
     <Compile Include="Serialization\SerializationManager.cs" />
     <Compile Include="Network\NetworkManager.cs" />
     <Compile Include="Models\General\SocketRequestCommunication.cs" />

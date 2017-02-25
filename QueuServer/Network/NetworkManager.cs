@@ -4,6 +4,7 @@ using QueuServer.Interfaces;
 using QueuServer.Managers;
 using QueuServer.Media;
 using QueuServer.Models.Terminal;
+using QueuServer.Printer;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -145,13 +146,25 @@ namespace QueuServer
         private void ComputeSocketCommunication_Android(Socket originSocket, SocketRequestCommunication comm)
         {
             var dbManager = DatabaseManager.getInstance();
-            int res = dbManager.AddNewTicket((int)comm.ticketType);
+            ticket newTicket = dbManager.AddNewTicket((int)comm.ticketType);
+
+            if (newTicket == null)
+            {
+                new Thread(() => SendData(originSocket, "0")).Start();
+                return;
+            }
 
             //Print ticket
-
+            var sType = SocketRequestCommunication.getTicketTypeString(comm.ticketType);
+            var sNum = SocketRequestCommunication.getTicketNumber(comm.ticketType, newTicket.number);
+            new PrinterManager(sType, sNum).Print();
 
             //Send confirmation to android
-            new Thread(() => SendData(originSocket, "1")).Start();
+            new Thread(() =>
+            {
+                Thread.Sleep(_Constants.TIME_WAIT_PRINTER); //give time for the printer to do it's work
+                SendData(originSocket, "1");
+            }).Start();
         }
 
         private void ComputeSocketCommunication_Client(Socket socket, SocketRequestCommunication comm)
