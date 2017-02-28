@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -22,11 +23,15 @@ namespace QueuServer
 
         public void Terminate()
         {
-            if (socket != null && socket.Connected)
-                socket.Close();
+            try
+            {
+                if (socket != null && socket.Connected)
+                    socket.Close();
 
-            if (thread != null)
-                thread.Abort();
+                if (thread != null)
+                    thread.Abort();
+            }
+            catch (Exception e) { }
         }
 
         public static int FindTerminal(List<SocketConnection> conns, Socket socket)
