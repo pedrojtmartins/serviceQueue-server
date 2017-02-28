@@ -110,5 +110,18 @@ namespace QueuServer
                 .Where(file => file.ToLower().EndsWith(".wmv") || file.ToLower().EndsWith(".mp4"))
                 .ToArray();
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            serverManager.Close();
+        }
+
+        void IWindowUpdate.log(string s)
+        {
+            //this.Dispatcher.Invoke(() =>
+            //{
+            //    log.Text = log.Text + " - " + s;
+            //});
+        }
     }
 }

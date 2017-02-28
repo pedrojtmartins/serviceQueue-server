@@ -7,6 +7,7 @@ using QueuServer.Models.Terminal;
 using QueuServer.Printer;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -31,22 +32,14 @@ namespace QueuServer
             this.updateCllback = updateCllback;
         }
 
-        ~NetworkManager()
-        {
-            tcpListener.Stop();
-            newClientsThread.Abort();
-
-            if (connections != null && connections.Count > 0)
-                foreach (var conn in connections)
-                    conn.Terminate();
-        }
-
         public void Initialize()
         {
-            ipAddress = IPAddress.Parse(_Constants.IP_ADDRESS);
+            string myIp = getMyIp();
+            updateCllback.log(myIp);
+            ipAddress = IPAddress.Parse(myIp);
             tcpListener = new TcpListener(ipAddress, _Constants.IP_PORT);
             tcpListener.Start();
-
+            
             newClientsThread = new Thread(() => ListenToNewClients(tcpListener));
             newClientsThread.Start();
         }
@@ -56,15 +49,22 @@ namespace QueuServer
             if (tcpListener == null)
                 return;
 
-            while (true)
+            try
             {
-                Socket newSocket = tcpListener.AcceptSocket();
-                new Thread(() => IdentifyConnection(newSocket)).Start();
+                while (true)
+                {
+                    Socket newSocket = tcpListener.AcceptSocket();
+                    new Thread(() => IdentifyConnection(newSocket)).Start();
+                }
+            }catch(Exception e)
+            {
+                //return;
             }
         }
 
         private void IdentifyConnection(Socket socket)
         {
+            updateCllback.log("waiting id");
             var buffer = new byte[100];
             int size = socket.Receive(buffer);
             if (size > 0)
@@ -75,9 +75,12 @@ namespace QueuServer
                     Thread newThread = new Thread(() => ListToClients(socket));
                     connections.Add(new SocketConnection(socket, newThread, id.IsTerminal, id.TerminalId));
                     newThread.Start();
+                    updateCllback.log("id check");
                 }
                 else
-                { }
+                {
+                    updateCllback.log("id null");
+                }
 
             }
             else
@@ -103,12 +106,14 @@ namespace QueuServer
                 //    break;
                 //}
 
+                updateCllback.log("list client");
                 var buffer = new byte[100];
                 socket.ReceiveTimeout = int.MaxValue;
 
                 try
                 {
                     int size = socket.Receive(buffer);
+                    updateCllback.log("client req");
                     if (size > 0)
                         ComputeSocketCommunication(socket, buffer, size);
                     else
@@ -119,10 +124,25 @@ namespace QueuServer
                 }
                 catch (Exception e)
                 {
+                    updateCllback.log(e.ToString());
                     SocketConnection.RemoveConnection(connections, socket);
                     return;
                 }
             }
+        }
+
+        internal void Close()
+        {
+            try
+            {
+                if (connections != null && connections.Count > 0)
+                    foreach (var c in connections)
+                        c.Terminate();
+
+                tcpListener.Stop();
+                newClientsThread.Abort();
+            }
+            catch (Exception e) { }
         }
 
         private void ComputeSocketCommunication(Socket socket, byte[] buffer, int size)
@@ -169,43 +189,37 @@ namespace QueuServer
 
         private void ComputeSocketCommunication_Client(Socket socket, SocketRequestCommunication comm)
         {
-            foreach (var con in connections)
+            int terminalId = SocketConnection.FindTerminal(connections, socket);
+            if (terminalId != -1)
             {
-                if (!con.isTerminal)
-                    continue;
+                var dbManager = DatabaseManager.getInstance();
 
-                int terminalId = SocketConnection.FindTerminal(connections, socket);
-                if (terminalId != -1)
+                if (comm.ticketCompletedId != -1)
+                    dbManager.SetTicketAsComplete(comm.ticketCompletedId, terminalId);
+
+                ServerUpdate su = new ServerUpdate();
+                ticket t = dbManager.GetNextTicket();
+                if (t != null)
                 {
-                    var dbManager = DatabaseManager.getInstance();
-
-                    if (comm.ticketCompletedId != -1)
-                        dbManager.SetTicketAsComplete(comm.ticketCompletedId, terminalId);
-
-                    ServerUpdate su = new ServerUpdate();
-                    ticket t = dbManager.GetNextTicket();
-                    if (t != null)
+                    if (dbManager.SetTicketForClient(t.id, terminalId) == -1)
                     {
-                        if (dbManager.SetTicketForClient(t.id, terminalId) == -1)
-                        {
 
-                        }
-
-                        su.nextTicket = new Models.TerminalTicket(t);
-                        updateCllback.TicketsUpdated(su);
-
-                        MediaPlayer.playNextTicket();
                     }
-                    else
-                        su.nextTicket = null;
 
-                    var serialized = SerializationManager<ServerUpdate>.Serialize(su);
-                    new Thread(() => SendDataToClients(serialized)).Start();
+                    su.nextTicket = new Models.TerminalTicket(t);
+                    updateCllback.TicketsUpdated(su);
+
+                    MediaPlayer.playNextTicket();
                 }
                 else
-                {
-                    throw new Exception();
-                }
+                    su.nextTicket = null;
+
+                var serialized = SerializationManager<ServerUpdate>.Serialize(su);
+                new Thread(() => SendData(socket, serialized)).Start();
+            }
+            else
+            {
+                throw new Exception();
             }
         }
 
@@ -220,18 +234,31 @@ namespace QueuServer
             return SerializationManager<SocketRequestCommunication>.Desserialize(bArray);
         }
 
-        public void SendDataToClients(string data)
-        {
-            var buffer = Encoding.ASCII.GetBytes(data);
-            foreach (var conn in connections)
-                if (conn.isTerminal)
-                    conn.socket.Send(buffer);
-        }
+        //public void SendDataToClients(string data)
+        //{
+        //    var buffer = Encoding.ASCII.GetBytes(data);
+        //    foreach (var conn in connections)
+        //        if (conn.isTerminal)
+        //            conn.socket.Send(buffer);
+        //}
 
         public void SendData(Socket socket, String data)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
             socket.Send(buffer);
+        }
+
+        private string getMyIp()
+        {
+            var host = Dns.GetHostName();
+            var hostEntry = Dns.GetHostEntry(host);
+            var adresses = hostEntry.AddressList;
+            var address = adresses.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+
+            if (address == null)
+                return "";
+
+            return address.ToString();
         }
     }
 }

@@ -10,5 +10,6 @@ namespace QueuServer.Interfaces
     interface IWindowUpdate
     {
         void TicketsUpdated(ServerUpdate su);
+        void log(string s);
     }
 }
